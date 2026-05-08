@@ -16,6 +16,9 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
 
+    @org.springframework.beans.factory.annotation.Value("${spring.mail.username}")
+    private String fromEmail;
+
     /**
      * Send an HTML email.
      */
@@ -27,7 +30,7 @@ public class EmailService {
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(htmlBody, true); // true = HTML
-            helper.setFrom("sales.webarya@gmail.com");
+            helper.setFrom(fromEmail);
 
             mailSender.send(message);
             log.info("Email sent to {} — subject: {}", to, subject);
