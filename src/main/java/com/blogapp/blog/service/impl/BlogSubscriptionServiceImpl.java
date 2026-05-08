@@ -35,7 +35,7 @@ public class BlogSubscriptionServiceImpl implements BlogSubscriptionService {
     @Override
     public void requestOtp(String email) {
         log.info("Requesting blog subscription OTP for email: {}", email);
-        otpService.sendOtp(email, OtpPurpose.BLOG_SUBSCRIBE);
+        otpService.sendOtp(email, OtpPurpose.BLOG_SUBSCRIBE, false);
     }
 
     @Override

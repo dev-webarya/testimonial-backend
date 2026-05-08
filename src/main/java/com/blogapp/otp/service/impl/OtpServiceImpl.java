@@ -36,17 +36,28 @@ public class OtpServiceImpl implements OtpService {
     private int resendCooldownSeconds;
 
     @Override
-    public boolean sendOtp(String email, OtpPurpose purpose) {
-        // Check resend cooldown
+    public boolean sendOtp(String email, OtpPurpose purpose, boolean isResend) {
+        // Check existing OTPs
         Optional<OtpVerification> existing = otpRepository
                 .findTopByEmailAndPurposeOrderByCreatedAtDesc(email, purpose);
 
         if (existing.isPresent()) {
             OtpVerification prev = existing.get();
-            LocalDateTime cooldownEnd = prev.getCreatedAt().plusSeconds(resendCooldownSeconds);
-            if (LocalDateTime.now().isBefore(cooldownEnd)) {
-                log.info("OTP cooldown active for {} purpose {}. Reusing existing OTP window.", email, purpose);
-                return false; // Indicates cooldown is active, no new OTP sent
+            
+            if (isResend) {
+                // If it's a resend attempt, enforce the spam cooldown (e.g. 60 seconds)
+                LocalDateTime cooldownEnd = prev.getCreatedAt().plusSeconds(resendCooldownSeconds);
+                if (LocalDateTime.now().isBefore(cooldownEnd)) {
+                    log.info("OTP spam cooldown active for {} purpose {}. Rejecting resend.", email, purpose);
+                    return false; 
+                }
+            } else {
+                // Not a resend (user hit the main login form again)
+                // If the previous OTP is still valid (not expired) and not verified, just reuse it without sending email
+                if (prev.getVerifiedAt() == null && LocalDateTime.now().isBefore(prev.getExpiresAt())) {
+                    log.info("Valid OTP already exists for {} purpose {}. Reusing without sending new email.", email, purpose);
+                    return false; 
+                }
             }
         }
 

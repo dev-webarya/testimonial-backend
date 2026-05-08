@@ -281,7 +281,7 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public void startSubmission(String email) {
-        otpService.sendOtp(email, com.blogapp.otp.enums.OtpPurpose.BLOG_SUBMISSION);
+        otpService.sendOtp(email, com.blogapp.otp.enums.OtpPurpose.BLOG_SUBMISSION, false);
     }
 
     @Override

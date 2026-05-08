@@ -38,11 +38,8 @@ public class AuthController {
             @Valid @RequestBody AuthStartRequest request) {
         log.info("Received login start request for email: {}", request.getEmail());
 
-        // Ensure user record exists (idempotent)
-        userService.findOrCreateByEmail(request.getEmail());
-
-        // Send OTP
-        boolean sent = otpService.sendOtp(request.getEmail(), OtpPurpose.USER_LOGIN);
+        // Send OTP (user record is NOT created here to avoid ghost users, it is created in verifyOtp)
+        boolean sent = otpService.sendOtp(request.getEmail(), OtpPurpose.USER_LOGIN, request.isResend());
 
         if (!sent) {
             log.info("OTP cooldown active, not sending a new OTP to: {}", request.getEmail());

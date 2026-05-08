@@ -13,4 +13,7 @@ public class AuthStartRequest {
     @Email(message = "Must be a valid email")
     @Schema(example = "reader@example.com")
     private String email;
+
+    @Schema(description = "Set to true if this is explicitly a resend request to force a new OTP generation", example = "false")
+    private boolean isResend;
 }
