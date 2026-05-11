@@ -25,4 +25,9 @@ public interface UserService {
      * Update user profile fields (name, mobile).
      */
     User updateProfile(String userId, String name, String mobile);
+
+    /**
+     * Update user password.
+     */
+    void updatePassword(String userId, String encodedPassword);
 }

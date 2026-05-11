@@ -1,20 +1,40 @@
 package com.blogapp.blog.dto.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class SubscriptionRequest {
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Invalid email format")
-    private String email;
+    @Data
+    @Schema(description = "Request to start blog subscription via OTP")
+    public static class Start {
+        @NotBlank(message = "Email is required")
+        @Email(message = "Invalid email format")
+        @Schema(example = "jane@example.com")
+        private String email;
+    }
 
-    @NotBlank(message = "OTP is required to subscribe")
-    private String otp;
+    @Data
+    @Schema(description = "Request to verify OTP for blog subscription")
+    public static class Verify {
+        @NotBlank(message = "Email is required")
+        @Email(message = "Invalid email format")
+        @Schema(example = "jane@example.com")
+        private String email;
+
+        @NotBlank(message = "OTP is required to subscribe")
+        @Schema(example = "123456")
+        private String otp;
+    }
+
+    @Data
+    @Schema(description = "Request to unsubscribe from blog updates")
+    public static class Unsubscribe {
+        @NotBlank(message = "Email is required")
+        @Email(message = "Invalid email format")
+        @Schema(example = "jane@example.com")
+        private String email;
+    }
 }

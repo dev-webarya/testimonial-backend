@@ -8,12 +8,17 @@ import com.blogapp.otp.enums.OtpPurpose;
 import com.blogapp.otp.service.OtpService;
 import com.blogapp.user.entity.User;
 import com.blogapp.user.service.UserService;
+import com.blogapp.auth.dto.request.UserPasswordLoginRequest;
+import com.blogapp.auth.dto.request.UserForgotPasswordRequest;
+import com.blogapp.auth.dto.request.UserResetPasswordRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +36,74 @@ public class AuthController {
     private final OtpService otpService;
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final PasswordEncoder passwordEncoder;
+
+    @PostMapping("/login-password")
+    @Operation(summary = "Login with email and password")
+    public ResponseEntity<?> loginWithPassword(@Valid @RequestBody UserPasswordLoginRequest request) {
+        log.info("Received password login request for email: {}", request.getEmail());
+
+        return userService.findByEmail(request.getEmail())
+                .filter(user -> user.getPassword() != null && passwordEncoder.matches(request.getPassword(), user.getPassword()))
+                .map(user -> {
+                    log.info("Password login successful for email: {}", user.getEmail());
+                    String token = jwtTokenProvider.generateToken(user.getId(), user.getEmail(), "ROLE_USER");
+                    
+                    AuthResponse response = AuthResponse.builder()
+                            .token(token)
+                            .tokenType("Bearer")
+                            .user(AuthResponse.UserInfo.builder()
+                                    .id(user.getId())
+                                    .email(user.getEmail())
+                                    .name(user.getName())
+                                    .emailVerified(user.getEmailVerifiedAt() != null)
+                                    .build())
+                            .build();
+                    return ResponseEntity.ok((Object) response);
+                })
+                .orElseGet(() -> {
+                    log.warn("Failed password login attempt for email: {}", request.getEmail());
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                            .body(Map.of("message", "Invalid email or password"));
+                });
+    }
+
+    @PostMapping("/forgot-password")
+    @Operation(summary = "Request OTP for user password reset")
+    public ResponseEntity<?> forgotPassword(@Valid @RequestBody UserForgotPasswordRequest request) {
+        log.info("Received forgot-password request for email: {}", request.getEmail());
+
+        if (userService.findByEmail(request.getEmail()).isEmpty()) {
+            // Prevent email enumeration
+            return ResponseEntity.ok(Map.of("message", "If that account exists, an OTP has been sent."));
+        }
+
+        boolean sent = otpService.sendOtp(request.getEmail(), OtpPurpose.USER_PASSWORD_RESET, false);
+        if (!sent) {
+            return ResponseEntity.ok(Map.of("message", "If that account exists, an OTP was already sent recently. Please check your email."));
+        }
+
+        return ResponseEntity.ok(Map.of("message", "If that account exists, an OTP has been sent."));
+    }
+
+    @PostMapping("/reset-password")
+    @Operation(summary = "Reset user password using OTP")
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody UserResetPasswordRequest request) {
+        log.info("Received reset-password request for email: {}", request.getEmail());
+
+        boolean isValid = otpService.verifyOtp(request.getEmail(), request.getOtp(), OtpPurpose.USER_PASSWORD_RESET);
+        if (!isValid) {
+            log.warn("Invalid OTP attempt for password reset: {}", request.getEmail());
+            return ResponseEntity.badRequest().body(Map.of("message", "Invalid or expired OTP"));
+        }
+
+        User user = userService.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        userService.updatePassword(user.getId(), passwordEncoder.encode(request.getNewPassword()));
+
+        return ResponseEntity.ok(Map.of("message", "Password has been successfully reset. You can now login."));
+    }
 
     @PostMapping("/start")
     @Operation(summary = "Start login — sends OTP to the given email")

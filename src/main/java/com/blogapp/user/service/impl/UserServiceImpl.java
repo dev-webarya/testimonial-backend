@@ -72,4 +72,13 @@ public class UserServiceImpl implements UserService {
         log.info("Updated profile for user ID: {}", userId);
         return userRepository.save(user);
     }
+
+    @Override
+    public void updatePassword(String userId, String encodedPassword) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+        user.setPassword(encodedPassword);
+        userRepository.save(user);
+        log.info("Updated password for user ID: {}", userId);
+    }
 }
