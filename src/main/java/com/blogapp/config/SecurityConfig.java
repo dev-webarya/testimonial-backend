@@ -72,6 +72,19 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/blogs/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/blogs/subscriptions/**").permitAll()
 
+                        // Student Reviews — public listing, auth-required submission
+                        .requestMatchers(HttpMethod.GET, "/api/reviews").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/{id}").permitAll()
+                        // POST /api/reviews and GET /api/reviews/me require authentication
+                        // (handled by .anyRequest().authenticated() below)
+
+                        // Running Classes — public browsing, auth-required enrollment
+                        .requestMatchers(HttpMethod.GET, "/api/classes").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/classes/{id}").permitAll()
+                        // POST /api/classes/{id}/enroll, GET /api/classes/my-enrollments,
+                        // POST /api/classes/enrollments/{id}/cancel → require authentication
+                        // (handled by .anyRequest().authenticated() below)
+
                         // Public - New Endpoints (Demo, Contact)
                         .requestMatchers("/api/public/**").permitAll()
 
