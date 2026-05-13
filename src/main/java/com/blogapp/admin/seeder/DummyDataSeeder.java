@@ -188,5 +188,79 @@ public class DummyDataSeeder implements CommandLineRunner {
 
         enrollmentRepository.save(pendingEnrollment);
         enrollmentRepository.save(confirmedEnrollment);
+
+        // More Running Classes
+        RunningClass dataScienceClass = RunningClass.builder()
+                .title("Data Science Bootcamp")
+                .description("Intensive 6-month bootcamp covering Python, ML, and Deep Learning.")
+                .category(ClassCategory.PROFESSIONAL)
+                .schedule("Weekends - 10:00 AM to 2:00 PM IST")
+                .batchSize("30-40")
+                .instructorName("Dr. Jane Smith")
+                .feeInfo("₹15,000 / month")
+                .startDate(now.plusDays(20))
+                .endDate(now.plusMonths(6))
+                .status(ClassStatus.ACTIVE)
+                .maxCapacity(40)
+                .enrolledCount(0)
+                .createdAt(now)
+                .updatedAt(now)
+                .build();
+        dataScienceClass = runningClassRepository.save(dataScienceClass);
+
+        RunningClass physicsClass = RunningClass.builder()
+                .title("Quantum Physics Fundamentals")
+                .description("Introduction to quantum mechanics and particle physics.")
+                .category(ClassCategory.POST_GRADUATE)
+                .schedule("Tue, Thu - 5:00 PM IST")
+                .batchSize("15-20")
+                .instructorName("Prof. Richard Feynman")
+                .feeInfo("₹8,000 / month")
+                .startDate(now.minusMonths(1))
+                .endDate(now.plusMonths(2))
+                .status(ClassStatus.ACTIVE)
+                .maxCapacity(25)
+                .enrolledCount(1)
+                .createdAt(now)
+                .updatedAt(now)
+                .build();
+        physicsClass = runningClassRepository.save(physicsClass);
+
+        RunningClass legacyClass = RunningClass.builder()
+                .title("Legacy Java Programming")
+                .description("Old course for Java 8 concepts. Currently not taking enrollments.")
+                .category(ClassCategory.UNDERGRADUATE)
+                .schedule("N/A")
+                .batchSize("20")
+                .instructorName("Mr. Gosling")
+                .feeInfo("₹3,000 / month")
+                .startDate(now.minusYears(1))
+                .endDate(now.minusMonths(6))
+                .status(ClassStatus.COMPLETED)
+                .maxCapacity(20)
+                .enrolledCount(20)
+                .createdAt(now)
+                .updatedAt(now)
+                .build();
+        runningClassRepository.save(legacyClass);
+
+        // Enrollment for Physics
+        Enrollment rejectedEnrollment = Enrollment.builder()
+                .classId(physicsClass.getId())
+                .userId("seed-student-3")
+                .studentName("Tom Hacker")
+                .parentName("Jerry Hacker")
+                .email("tom@example.com")
+                .mobileNumber("1122334455")
+                .gradeOrClass("M.Sc 1st Year")
+                .schoolOrCollege("Caltech")
+                .preferredBatch("Any")
+                .status(EnrollmentStatus.REJECTED)
+                .rejectionReason("Incomplete prerequisites.")
+                .submittedAt(now.minusDays(5))
+                .createdAt(now)
+                .updatedAt(now)
+                .build();
+        enrollmentRepository.save(rejectedEnrollment);
     }
 }
