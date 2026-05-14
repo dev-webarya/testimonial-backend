@@ -9,4 +9,6 @@ public class AdminForgotRequest {
     @Email(message = "Please provide a valid email")
     @NotBlank(message = "Email is required")
     private String email;
+
+    private boolean isResend;
 }

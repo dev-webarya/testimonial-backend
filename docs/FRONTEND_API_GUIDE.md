@@ -14,7 +14,8 @@ Starts the subscription process by sending a 6-digit OTP to the user's email.
 - **Body:**
 ```json
 {
-  "email": "user@example.com"
+  "email": "user@example.com",
+  "isResend": false
 }
 ```
 - **Response:** `200 OK`
@@ -82,7 +83,8 @@ Starts the password reset process if a user forgot their password.
 - **Body:**
 ```json
 {
-  "email": "user@example.com"
+  "email": "user@example.com",
+  "isResend": false
 }
 ```
 - **Response:** `200 OK`
@@ -127,3 +129,4 @@ Allows a logged-in user to change their password.
 1. **Security:** Regular users (`ROLE_USER`) are strictly forbidden from accessing admin resources. Any request to `/api/admin/**` with a user token will return a `403 Forbidden` error.
 2. **Persistence:** The backend uses MongoDB for user and subscription data.
 3. **Email Notifications:** Subscription notifications are triggered automatically whenever an admin approves a blog post in the admin panel.
+4. **OTP Expiration and Resending:** All OTPs are valid for exactly **5 minutes**. To resend an OTP, set `"isResend": true` in the initial request body. If the previous OTP is still valid and `"isResend": false`, the backend will not generate a new OTP or send a new email.

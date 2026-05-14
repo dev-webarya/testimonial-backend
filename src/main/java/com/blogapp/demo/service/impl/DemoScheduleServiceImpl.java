@@ -41,7 +41,7 @@ public class DemoScheduleServiceImpl implements DemoScheduleService {
     @Override
     public void sendOtp(SendOtpRequest request) {
         log.info("Sending schedule demo OTP to email: {}", request.getEmail());
-        otpService.sendOtp(request.getEmail(), OtpPurpose.SCHEDULE_DEMO, false);
+        otpService.sendOtp(request.getEmail(), OtpPurpose.SCHEDULE_DEMO, request.isResend());
     }
 
     @Override

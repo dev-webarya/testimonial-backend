@@ -52,7 +52,7 @@ app:
     password: ${ADMIN_PASSWORD}
   otp:
     length: 6
-    expiry-minutes: 10
+    expiry-minutes: 5
     max-attempts: 5
     resend-cooldown-seconds: 60
   frontend:

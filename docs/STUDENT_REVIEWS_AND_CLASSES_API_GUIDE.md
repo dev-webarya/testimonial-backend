@@ -47,7 +47,7 @@ User login uses OTP or password. The JWT token returned must be sent in every pr
 
 **Step 1 — Send OTP**
 - **URL:** `POST /api/auth/start`
-- **Body:** `{ "email": "user@example.com" }`
+- **Body:** `{ "email": "user@example.com", "isResend": false }`
 - **Response:** `200 OK` → `{ "message": "OTP sent to user@example.com" }`
 
 **Step 2 — Verify OTP & get token**
@@ -667,6 +667,9 @@ Permanently deletes an enrollment record. If the enrollment was CONFIRMED, the c
 
 ### Email is never sent by the user
 - For both reviews and enrollments, the `email` field is read from the JWT on the backend — do not include an email field in the submission form. The backend uses the logged-in user's verified email automatically.
+
+### OTP Expiration and Resending
+- All OTPs are valid for exactly **5 minutes**. To resend an OTP, set `"isResend": true` in the initial request body (e.g., when calling `/api/auth/start`). If the previous OTP is still valid and `"isResend": false`, the backend will not generate a new OTP or send a new email.
 
 ### Pagination
 All paginated responses follow the same envelope:

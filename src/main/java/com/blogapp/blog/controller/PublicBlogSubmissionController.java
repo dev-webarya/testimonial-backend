@@ -30,7 +30,7 @@ public class PublicBlogSubmissionController {
     @PostMapping("/start")
     @Operation(summary = "Start submission", description = "Sends an OTP to the author's email to verify ownership before submission.")
     public ResponseEntity<Map<String, Object>> startSubmission(@Valid @RequestBody SubmissionRequest.Start request) {
-        blogService.startSubmission(request.getAuthorEmail());
+        blogService.startSubmission(request.getAuthorEmail(), request.isResend());
         return ResponseEntity.ok(Map.of(
                 "success", true,
                 "message", "OTP sent to " + request.getAuthorEmail()

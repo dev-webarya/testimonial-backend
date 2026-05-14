@@ -280,8 +280,8 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public void startSubmission(String email) {
-        otpService.sendOtp(email, com.blogapp.otp.enums.OtpPurpose.BLOG_SUBMISSION, false);
+    public void startSubmission(String email, boolean isResend) {
+        otpService.sendOtp(email, com.blogapp.otp.enums.OtpPurpose.BLOG_SUBMISSION, isResend);
     }
 
     @Override

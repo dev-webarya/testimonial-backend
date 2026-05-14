@@ -11,4 +11,7 @@ public class SendOtpRequest {
     @Email(message = "Invalid email format")
     @Schema(description = "Email address to send the OTP to", example = "student@email.com")
     private String email;
+
+    @Schema(description = "Set to true if this is explicitly a resend request", example = "false")
+    private boolean isResend;
 }

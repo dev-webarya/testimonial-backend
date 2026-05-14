@@ -78,7 +78,7 @@ public class AuthController {
             return ResponseEntity.ok(Map.of("message", "If that account exists, an OTP has been sent."));
         }
 
-        boolean sent = otpService.sendOtp(request.getEmail(), OtpPurpose.USER_PASSWORD_RESET, false);
+        boolean sent = otpService.sendOtp(request.getEmail(), OtpPurpose.USER_PASSWORD_RESET, request.isResend());
         if (!sent) {
             return ResponseEntity.ok(Map.of("message", "If that account exists, an OTP was already sent recently. Please check your email."));
         }

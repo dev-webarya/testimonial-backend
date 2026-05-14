@@ -14,6 +14,9 @@ public class SubscriptionRequest {
         @Email(message = "Invalid email format")
         @Schema(example = "jane@example.com")
         private String email;
+
+        @Schema(description = "Set to true if this is explicitly a resend request", example = "false")
+        private boolean isResend;
     }
 
     @Data

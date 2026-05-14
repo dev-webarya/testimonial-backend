@@ -33,9 +33,9 @@ public class BlogSubscriptionServiceImpl implements BlogSubscriptionService {
     private String frontendUrl;
 
     @Override
-    public void requestOtp(String email) {
+    public void requestOtp(String email, boolean isResend) {
         log.info("Requesting blog subscription OTP for email: {}", email);
-        otpService.sendOtp(email, OtpPurpose.BLOG_SUBSCRIBE, false);
+        otpService.sendOtp(email, OtpPurpose.BLOG_SUBSCRIBE, isResend);
     }
 
     @Override

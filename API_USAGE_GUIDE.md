@@ -264,7 +264,8 @@ POST /api/blogs/subscribe/start
 ```json
 {
   "email": "reader@example.com",
-  "name": "Jane Doe"
+  "name": "Jane Doe",
+  "isResend": false
 }
 ```
 
@@ -336,7 +337,8 @@ POST /api/blogs/submission/start
   "tags": ["physics", "igcse", "exam-prep"],
   "authorName": "John Doe",
   "authorEmail": "john@example.com",
-  "authorMobile": "+919876543210"
+  "authorMobile": "+919876543210",
+  "isResend": false
 }
 ```
 
@@ -377,7 +379,7 @@ POST /api/blogs/submission/verify
 ```
 
 > **OTP Rules:**
-> - 6 digits, valid for 10 minutes
+> - 6 digits, valid for 5 minutes
 > - Max 5 wrong attempts
 > - Resend cooldown: 60 seconds
 
