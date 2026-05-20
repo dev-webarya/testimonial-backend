@@ -10,6 +10,7 @@ import com.blogapp.contact.mapper.ContactMapper;
 import com.blogapp.contact.repository.ContactMessageRepository;
 import com.blogapp.contact.repository.ContactSubjectRepository;
 import com.blogapp.contact.service.ContactMessageService;
+import com.blogapp.otp.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -27,6 +28,7 @@ public class ContactMessageServiceImpl implements ContactMessageService {
     private final ContactMessageRepository messageRepository;
     private final ContactSubjectRepository subjectRepository;
     private final ContactMapper contactMapper;
+    private final EmailService emailService;
 
     @Override
     @Transactional
@@ -43,6 +45,17 @@ public class ContactMessageServiceImpl implements ContactMessageService {
                 .build();
 
         message = messageRepository.save(message);
+
+        // Notify admin via email
+        log.info("Sending Contact Us admin notification for message from: {}", request.getFullName());
+        emailService.sendContactUsAdminNotification(
+                request.getFullName(),
+                request.getEmailAddress(),
+                request.getPhoneNumber(),
+                subject.getName(),
+                request.getMessageText()
+        );
+
         return contactMapper.toContactMessageResponse(message, subject);
     }
 
