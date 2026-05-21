@@ -154,7 +154,7 @@ public class EmailService {
                       -webkit-font-smoothing: antialiased;
                     }
                     .wrapper {
-                      width: 100%;
+                      width: 100%%;
                       background-color: #f8fafc;
                       padding: 40px 0;
                     }
@@ -208,7 +208,7 @@ public class EmailService {
                       margin-bottom: 24px;
                     }
                     .details-table {
-                      width: 100%;
+                      width: 100%%;
                       border-collapse: collapse;
                       margin-bottom: 24px;
                     }
@@ -221,7 +221,7 @@ public class EmailService {
                     .details-table td.label {
                       color: #64748b;
                       font-weight: 600;
-                      width: 30%;
+                      width: 30%%;
                     }
                     .details-table td.value {
                       color: #1e293b;
@@ -346,7 +346,7 @@ public class EmailService {
                       -webkit-font-smoothing: antialiased;
                     }
                     .wrapper {
-                      width: 100%;
+                      width: 100%%;
                       background-color: #f8fafc;
                       padding: 40px 0;
                     }
@@ -400,7 +400,7 @@ public class EmailService {
                       margin-bottom: 24px;
                     }
                     .details-table {
-                      width: 100%;
+                      width: 100%%;
                       border-collapse: collapse;
                       margin-bottom: 8px;
                     }
@@ -413,7 +413,7 @@ public class EmailService {
                     .details-table td.label {
                       color: #64748b;
                       font-weight: 600;
-                      width: 35%;
+                      width: 35%%;
                     }
                     .details-table td.value {
                       color: #1e293b;
