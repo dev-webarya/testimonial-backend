@@ -1,6 +1,7 @@
 package com.blogapp.auth.controller;
 
 import com.blogapp.auth.dto.response.AuthResponse;
+import com.blogapp.blog.service.BlogService;
 import com.blogapp.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,6 +28,7 @@ public class AccountController {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final BlogService blogService;
 
     @GetMapping("/me")
     @Operation(summary = "Get my profile", description = "Returns the authenticated user's profile info")
@@ -58,5 +60,11 @@ public class AccountController {
 
         userService.updatePassword(fullUser.getId(), passwordEncoder.encode(request.getNewPassword()));
         return ResponseEntity.ok(Map.of("message", "Password successfully changed"));
+    }
+
+    @GetMapping("/my-blogs")
+    @Operation(summary = "Get my submitted blogs", description = "Returns a list of all blogs submitted by the authenticated user")
+    public ResponseEntity<java.util.List<com.blogapp.blog.dto.response.BlogSummaryResponse>> getMyBlogs(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(blogService.getMyBlogs(user.getEmail()));
     }
 }

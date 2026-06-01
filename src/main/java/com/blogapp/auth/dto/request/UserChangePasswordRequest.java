@@ -1,5 +1,6 @@
 package com.blogapp.auth.dto.request;
 
+import com.blogapp.common.validation.ValidPassword;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,5 +13,6 @@ public class UserChangePasswordRequest {
     private String oldPassword;
 
     @NotBlank(message = "New password is required")
+    @ValidPassword
     private String newPassword;
 }

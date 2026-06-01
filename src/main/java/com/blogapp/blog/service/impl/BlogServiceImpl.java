@@ -296,4 +296,13 @@ public class BlogServiceImpl implements BlogService {
         }
         return createBlog(request, request.getAuthorName(), request.getAuthorEmail(), request.getAuthorMobile());
     }
+
+    @Override
+    public List<BlogSummaryResponse> getMyBlogs(String email) {
+        List<BlogPost> myBlogs = blogPostRepository.findByAuthorEmail(email);
+        return myBlogs.stream()
+                .sorted(Comparator.comparing(BlogPost::getSubmittedAt).reversed())
+                .map(blogMapper::toSummaryResponse)
+                .collect(Collectors.toList());
+    }
 }

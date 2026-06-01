@@ -38,6 +38,66 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
 
+    @PostMapping("/register")
+    @Operation(summary = "Register a new user with email and password")
+    public ResponseEntity<?> register(@Valid @RequestBody com.blogapp.auth.dto.request.UserRegisterRequest request) {
+        log.info("Received registration request for email: {}", request.getEmail());
+
+        // Check if user exists
+        java.util.Optional<User> existingUserOpt = userService.findByEmail(request.getEmail());
+        if (existingUserOpt.isPresent()) {
+            User existingUser = existingUserOpt.get();
+            if (existingUser.getEmailVerifiedAt() != null) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(Map.of("message", "User with this email already exists."));
+            }
+            // If unverified, we update their details and password, then resend OTP
+            userService.updateProfile(existingUser.getId(), request.getName(), request.getMobile());
+            userService.updatePassword(existingUser.getId(), passwordEncoder.encode(request.getPassword()));
+        } else {
+            // Create new unverified user
+            User newUser = userService.findOrCreateByEmail(request.getEmail());
+            userService.updateProfile(newUser.getId(), request.getName(), request.getMobile());
+            userService.updatePassword(newUser.getId(), passwordEncoder.encode(request.getPassword()));
+        }
+
+        // Send registration OTP
+        otpService.sendOtp(request.getEmail(), OtpPurpose.USER_REGISTRATION, false);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(Map.of("message", "Registration successful. Please verify your email with the OTP sent."));
+    }
+
+    @PostMapping("/verify-registration")
+    @Operation(summary = "Verify OTP to complete registration")
+    public ResponseEntity<?> verifyRegistration(@Valid @RequestBody AuthVerifyRequest request) {
+        log.info("Received registration verification request for email: {}", request.getEmail());
+
+        boolean valid = otpService.verifyOtp(request.getEmail(), request.getOtp(), OtpPurpose.USER_REGISTRATION);
+        if (!valid) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Invalid or expired OTP"));
+        }
+
+        User user = userService.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        userService.markEmailVerified(user.getId());
+
+        String token = jwtTokenProvider.generateToken(user.getId(), user.getEmail(), "ROLE_USER");
+        AuthResponse response = AuthResponse.builder()
+                .token(token)
+                .tokenType("Bearer")
+                .user(AuthResponse.UserInfo.builder()
+                        .id(user.getId())
+                        .email(user.getEmail())
+                        .name(user.getName())
+                        .emailVerified(true)
+                        .build())
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/login-password")
     @Operation(summary = "Login with email and password")
     public ResponseEntity<?> loginWithPassword(@Valid @RequestBody UserPasswordLoginRequest request) {
@@ -46,6 +106,10 @@ public class AuthController {
         return userService.findByEmail(request.getEmail())
                 .filter(user -> user.getPassword() != null && passwordEncoder.matches(request.getPassword(), user.getPassword()))
                 .map(user -> {
+                    if (user.getEmailVerifiedAt() == null) {
+                        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                                .body((Object) Map.of("message", "Email not verified. Please verify your email first."));
+                    }
                     log.info("Password login successful for email: {}", user.getEmail());
                     String token = jwtTokenProvider.generateToken(user.getId(), user.getEmail(), "ROLE_USER");
                     
@@ -56,7 +120,7 @@ public class AuthController {
                                     .id(user.getId())
                                     .email(user.getEmail())
                                     .name(user.getName())
-                                    .emailVerified(user.getEmailVerifiedAt() != null)
+                                    .emailVerified(true)
                                     .build())
                             .build();
                     return ResponseEntity.ok((Object) response);

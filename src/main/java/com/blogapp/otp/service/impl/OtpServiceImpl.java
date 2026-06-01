@@ -82,6 +82,7 @@ public class OtpServiceImpl implements OtpService {
             case BLOG_SUBSCRIBE -> "Verify your Blog Subscription";
             case BLOG_SUBMISSION -> "Verify your Blog Submission";
             case SCHEDULE_DEMO -> "Verify your Demo Request";
+            case USER_REGISTRATION -> "Verify your New Account";
             default -> "Your Login Verification OTP";
         };
 

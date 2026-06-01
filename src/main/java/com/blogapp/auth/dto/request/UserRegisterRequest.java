@@ -10,15 +10,18 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResetPasswordRequest {
+public class UserRegisterRequest {
+
+    @NotBlank(message = "Name is required")
+    private String name;
+
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
     private String email;
 
-    @NotBlank(message = "OTP is required")
-    private String otp;
-
-    @NotBlank(message = "New password is required")
+    @NotBlank(message = "Password is required")
     @ValidPassword
-    private String newPassword;
+    private String password;
+
+    private String mobile;
 }

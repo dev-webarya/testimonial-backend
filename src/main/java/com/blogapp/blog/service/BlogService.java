@@ -40,4 +40,6 @@ public interface BlogService {
     boolean verifySubmission(String email, String otp);
 
     BlogPost finishSubmission(CreateBlogRequest request);
+
+    List<BlogSummaryResponse> getMyBlogs(String email);
 }
