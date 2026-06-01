@@ -35,6 +35,12 @@ public class BlogSubscriptionServiceImpl implements BlogSubscriptionService {
     @Override
     public boolean requestOtp(String email, boolean isResend) {
         log.info("Requesting blog subscription OTP for email: {}", email);
+        
+        Optional<BlogSubscription> existingOpt = subscriptionRepository.findByEmail(email);
+        if (existingOpt.isPresent() && existingOpt.get().isActive()) {
+            throw new BadRequestException("You are already subscribed to blog updates.");
+        }
+        
         return otpService.sendOtp(email, OtpPurpose.BLOG_SUBSCRIBE, isResend);
     }
 
@@ -61,6 +67,13 @@ public class BlogSubscriptionServiceImpl implements BlogSubscriptionService {
                     .build();
             subscriptionRepository.save(subscription);
             log.info("Created new blog subscription for email: {}", email);
+        }
+        
+        // Send confirmation email
+        try {
+            emailService.sendBlogSubscriptionConfirmation(email);
+        } catch (Exception e) {
+            log.error("Failed to send subscription confirmation email to {}", email, e);
         }
     }
 

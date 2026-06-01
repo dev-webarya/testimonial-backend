@@ -1,6 +1,7 @@
 package com.blogapp.blog.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -44,6 +45,7 @@ public class CreateBlogRequest {
     private String authorName;
 
     @NotBlank(message = "Author Email is required")
+    @Email(message = "Invalid email format")
     @Schema(description = "Email of the blog author", example = "jane@example.com")
     private String authorEmail;
 

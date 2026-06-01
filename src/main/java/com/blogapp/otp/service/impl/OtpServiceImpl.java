@@ -26,7 +26,7 @@ public class OtpServiceImpl implements OtpService {
     @Value("${app.otp.length:6}")
     private int otpLength;
 
-    @Value("${app.otp.expiry-minutes:10}")
+    @Value("${app.otp.expiry-minutes:5}")
     private int expiryMinutes;
 
     @Value("${app.otp.max-attempts:5}")
